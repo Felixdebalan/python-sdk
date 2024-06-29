@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Initialize the Voicegain client
 configuration = Configuration()
-configuration.api_key['Authorization'] = 'Bearer knI8RKO+ufSnww3Zn9DYC6/xqQInUYD+6uOtJpaDLRA='  # Replace with your API key
+configuration.api_key['Authorization'] = 'Bearer your_api_key_here'  # Replace with your API key
 api_client = ApiClient(configuration)
 
 transcribe_api = TranscribeApi(api_client)
