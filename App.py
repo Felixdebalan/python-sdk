@@ -34,5 +34,9 @@ def set_keywords():
     keywords = [keyword.strip().lower() for keyword in data.get('keywords', '').split(',')]
     return jsonify({'status': 'success'})
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+import os
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
