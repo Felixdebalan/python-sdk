@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # Initialize the Voicegain client
 configuration = Configuration()
-configuration.api_key['Authorization'] = 'Bearer your_api_key_here'  # Replace with your API key
+configuration.api_key['Authorization'] = 'Bearer knI8RKO+ufSnww3Zn9DYC6/xqQInUYD+6uOtJpaDLRA='  # Replace with your API key
 api_client = ApiClient(configuration)
 
 transcribe_api = TranscribeApi(api_client)
@@ -34,8 +34,5 @@ def set_keywords():
     keywords = [keyword.strip().lower() for keyword in data.get('keywords', '').split(',')]
     return jsonify({'status': 'success'})
 
-import os
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')

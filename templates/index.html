@@ -1,79 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speech Recognition App</title>
-    <script>
-        let recognition;
-        let isRecording = false;
-
-        function startRecording() {
-            if (!isRecording) {
-                isRecording = true;
-                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                recognition.continuous = true;
-                recognition.interimResults = true;
-
-                recognition.onresult = function(event) {
-                    let transcript = '';
-                    for (let i = event.resultIndex; i < event.results.length; ++i) {
-                        transcript += event.results[i][0].transcript;
-                    }
-                    document.getElementById('transcription').innerText = transcript;
-                    fetch('/recognize', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({transcript})
-                    }).then(response => response.json())
-                      .then(data => {
-                          document.getElementById('keyword-count').innerText = 'Keyword Count: ' + JSON.stringify(data.keyword_count);
-                      });
-                };
-
-                recognition.start();
-            }
-        }
-
-        function stopRecording() {
-            if (isRecording) {
-                isRecording = false;
-                recognition.stop();
-            }
-        }
-
-        function setKeywords() {
-            const keywords = document.getElementById('keywords').value;
-            fetch('/keywords', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({keywords})
-            }).then(response => response.json())
-              .then(data => {
-                  if (data.status === 'success') {
-                      alert('Keywords set successfully!');
-                  }
-              });
-        }
-    </script>
+    <title>Voicegain Speech Recognition</title>
 </head>
 <body>
-    <h1>Speech Recognition App</h1>
-    <input type="text" id="keywords" placeholder="Enter keywords separated by commas">
-    <button onclick="setKeywords()">Set Keywords</button>
-    <button onclick="startRecording()">Start</button>
-    <button onclick="stopRecording()">Stop</button>
-    <div>
-        <h2>Live Transcription</h2>
-        <p id="transcription"></p>
-    </div>
-    <div>
-        <h2>Keyword Count</h2>
-        <p id="keyword-count"></p>
-    </div>
+    <h1>Voicegain Speech Recognition</h1>
+    <form id="keywordForm">
+        <label for="keywords">Keywords (comma separated):</label>
+        <input type="text" id="keywords" name="keywords">
+        <button type="button" onclick="setKeywords()">Set Keywords</button>
+    </form>
+    <form id="recognitionForm">
+        <label for="transcript">Transcript:</label>
+        <textarea id="transcript" name="transcript"></textarea>
+        <button type="button" onclick="recognize()">Recognize</button>
+    </form>
+    <div id="results"></div>
+    <script>
+        async function setKeywords() {
+            const keywords = document.getElementById('keywords').value;
+            const response = await fetch('/keywords', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ keywords })
+            });
+            const result = await response.json();
+            document.getElementById('results').innerText = JSON.stringify(result);
+        }
+
+        async function recognize() {
+            const transcript = document.getElementById('transcript').value;
+            const response = await fetch('/recognize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ transcript })
+            });
+            const result = await response.json();
+            document.getElementById('results').innerText = JSON.stringify(result);
+        }
+    </script>
 </body>
 </html>
